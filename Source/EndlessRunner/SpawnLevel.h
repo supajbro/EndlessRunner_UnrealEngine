@@ -37,22 +37,10 @@ public:
 protected:
 	APawn* Player;
 
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<ABaseLevel> Level1;
+	UPROPERTY(EditAnywhere, Category = "Levels")
+	TArray<TSubclassOf<ABaseLevel>> Levels;
 
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<ABaseLevel> Level2;
-
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<ABaseLevel> Level3;
-
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<ABaseLevel> Level4;
-
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<ABaseLevel> Level5;
-
-		TArray<ABaseLevel*> LevelList;
+	TArray<ABaseLevel*> LevelList;
 
 public:
 	int RandomLevel;

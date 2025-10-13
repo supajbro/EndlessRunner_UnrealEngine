@@ -46,20 +46,12 @@ void ASpawnLevel::SpawnLevel(bool IsFirst)
 	RandomLevel = FMath::RandRange(1, 5);
 	ABaseLevel* NewLevel = nullptr;
 
-	if (RandomLevel == 1) {
-		NewLevel = GetWorld()->SpawnActor<ABaseLevel>(Level1, SpawnLocation, SpawnRotation, SpawnInfo);
-	}
-	else if (RandomLevel == 2) {
-		NewLevel = GetWorld()->SpawnActor<ABaseLevel>(Level2, SpawnLocation, SpawnRotation, SpawnInfo);
-	}
-	else if (RandomLevel == 3) {
-		NewLevel = GetWorld()->SpawnActor<ABaseLevel>(Level3, SpawnLocation, SpawnRotation, SpawnInfo);
-	}
-	else if (RandomLevel == 4) {
-		NewLevel = GetWorld()->SpawnActor<ABaseLevel>(Level4, SpawnLocation, SpawnRotation, SpawnInfo);
-	}
-	else if (RandomLevel == 5) {
-		NewLevel = GetWorld()->SpawnActor<ABaseLevel>(Level5, SpawnLocation, SpawnRotation, SpawnInfo);
+	// Randomly choose next level
+	for (int i = 0; i < Levels.Num(); i++)
+	{
+		if (RandomLevel == i) {
+			NewLevel = GetWorld()->SpawnActor<ABaseLevel>(Levels[i], SpawnLocation, SpawnRotation, SpawnInfo);
+		}
 	}
 
 	if (NewLevel == nullptr) 
