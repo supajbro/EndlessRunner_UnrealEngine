@@ -70,7 +70,7 @@ void ARunnerCharacter::Tick(float DeltaTime)
 	tempPos.Z = zPos;
 	SideViewCamera->SetWorldLocation(tempPos);
 
-	FallingGravity();
+	FallingGravity(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -101,15 +101,19 @@ void ARunnerCharacter::MoveRight(float value)
 	AddMovementInput(FVector(0.0f, 1.0f, 0.0f), value);
 }
 
-void ARunnerCharacter::FallingGravity()
+void ARunnerCharacter::FallingGravity(float DeltaTime)
 {
-	if (!GetCharacterMovement()->IsFalling()) 
+	bool bIsFalling = GetCharacterMovement()->IsFalling();
+
+	if (!bIsFalling)
 	{
+		FallGravityMultiplier = FallGravityMultiplierMin;
 		return;
 	}
 
+	FallGravityMultiplier = (FallGravityMultiplier < FallGravityMultiplierMax) ? FallGravityMultiplier + DeltaTime * FallGravityScaler : FallGravityMultiplierMax;
 	FVector tempVel = GetCharacterMovement()->Velocity;
-	tempVel.Z -= ExtraFallingVel;
+	tempVel.Z -= FallGravityMultiplier * DeltaTime;
 	GetCharacterMovement()->Velocity = tempVel;
 }
 
