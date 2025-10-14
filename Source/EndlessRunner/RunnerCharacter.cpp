@@ -51,6 +51,15 @@ void ARunnerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	bool bIsGrounded = GetCharacterMovement()->IsMovingOnGround();
+
+	if (bIsGrounded) {
+		TimeSinceLeftGround = 0.f;
+	}
+	else {
+		TimeSinceLeftGround += DeltaTime;
+	}
+
 	tempPos = GetActorLocation();
 	tempPos.X -= 850.f;
 	tempPos.Z = zPos;
@@ -70,6 +79,13 @@ void ARunnerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARunnerCharacter::MoveRight);
 }
 
+void ARunnerCharacter::Jump()
+{
+	if (GetCharacterMovement()->IsMovingOnGround() || TimeSinceLeftGround <= KoyoteTime) {
+		Super::Jump();
+	}
+}
+
 void ARunnerCharacter::MoveRight(float value)
 {
 	if (!CanMove) {
@@ -86,9 +102,8 @@ void ARunnerCharacter::FallingGravity()
 		return;
 	}
 
-	float additionalVel = 10.f;
 	FVector tempVel = GetCharacterMovement()->Velocity;
-	tempVel.Z -= additionalVel;
+	tempVel.Z -= ExtraFallingVel;
 	GetCharacterMovement()->Velocity = tempVel;
 }
 

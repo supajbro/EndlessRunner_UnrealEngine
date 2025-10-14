@@ -29,10 +29,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void Jump() override;
 
 protected:
 	void MoveRight(float value);
 	void FallingGravity();
+
 
 public:
 	class UCameraComponent* GetSideViewCameraComponent() const 
@@ -51,4 +53,14 @@ private:
 	float zPos;
 	FVector tempPos = FVector();
 	bool CanMove;
+
+
+	float ExtraFallingVel = 10.f;
+
+	// Koyote time
+	float TimeSinceLeftGround = 0.f;
+	bool bWasGroundedLastFrame = false;
+
+	UPROPERTY(EditAnywhere, Category = "Jumping")
+	float KoyoteTime = .2f;
 };
