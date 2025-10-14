@@ -5,6 +5,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Spikes.h"
+#include "WallSpikes.h"
+#include "Engine.h"
 
 // Sets default values
 ARunnerCharacter::ARunnerCharacter()
@@ -42,6 +45,8 @@ ARunnerCharacter::ARunnerCharacter()
 void ARunnerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ARunnerCharacter::OnOverlapBegin);
 	
 	CanMove = true;
 }
@@ -81,7 +86,8 @@ void ARunnerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ARunnerCharacter::Jump()
 {
-	if (GetCharacterMovement()->IsMovingOnGround() || TimeSinceLeftGround <= KoyoteTime) {
+	if (GetCharacterMovement()->IsMovingOnGround() || TimeSinceLeftGround <= KoyoteTime) 
+	{
 		Super::Jump();
 	}
 }
@@ -109,11 +115,26 @@ void ARunnerCharacter::FallingGravity()
 
 void ARunnerCharacter::RestartLevel()
 {
-
+	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
 }
 
 void ARunnerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor != nullptr)
+	{
+		ASpikes* WallSpike = Cast<AWallSpikes>(OtherActor);
+		ASpikes* Spike = Cast<ASpikes>(OtherActor);
 
+		// Collided with one of the spikes and it is game over
+		if (WallSpike || Spike)
+		{
+			GetMesh()->Deactivate();
+			GetMesh()->SetVisibility(false);
+			CanMove = false;
+
+			FTimerHandle UnusedHandle;
+			GetWorldTimerManager().SetTimer(UnusedHandle, this, &ARunnerCharacter::RestartLevel, 2.f, false);
+		}
+	}
 }
 

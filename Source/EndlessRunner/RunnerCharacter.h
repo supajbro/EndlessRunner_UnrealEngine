@@ -35,7 +35,6 @@ protected:
 	void MoveRight(float value);
 	void FallingGravity();
 
-
 public:
 	class UCameraComponent* GetSideViewCameraComponent() const 
 	{
