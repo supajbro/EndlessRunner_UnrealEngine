@@ -43,7 +43,18 @@ void ASpawnLevel::SpawnLevel(bool IsFirst)
 		SpawnLocation = LastLevel->GetSpawnLocation()->GetComponentTransform().GetTranslation();
 	}
 
-	RandomLevel = FMath::RandRange(1, 5);
+	RandomLevel = FMath::RandRange(0, Levels.Num());
+	// Have a 75% chance of choosing another level if it is the same as the previous level (Avoids repetition)
+	if (RandomLevel == PreviousRandomLevel)
+	{
+		int rand = FMath::RandRange(0, 100);
+		if (rand < 75)
+		{
+			RandomLevel = FMath::RandRange(0, Levels.Num());
+		}
+	}
+	PreviousRandomLevel = RandomLevel;
+
 	ABaseLevel* NewLevel = nullptr;
 
 	// Randomly choose next level

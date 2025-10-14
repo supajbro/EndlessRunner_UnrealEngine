@@ -44,6 +44,7 @@ protected:
 
 public:
 	int RandomLevel;
+	int PreviousRandomLevel;
 
 	FVector SpawnLocation = FVector();
 	FRotator SpawnRotation = FRotator();
