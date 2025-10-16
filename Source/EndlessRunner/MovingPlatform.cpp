@@ -17,6 +17,12 @@ AMovingPlatform::AMovingPlatform()
 	MovingCube = CreateDefaultSubobject<UBoxComponent>(TEXT("MovingCube"));
 	MovingCube->SetupAttachment(RootComponent);
 
+	if (MovingCube && StartPosition)
+	{
+		FVector StartLoc = StartPosition->GetComponentLocation();
+		MovingCube->SetWorldLocation(StartLoc);
+	}
+
 	// Enable collision for overlap detection
 	MovingCube->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	MovingCube->SetCollisionResponseToAllChannels(ECR_Overlap);
