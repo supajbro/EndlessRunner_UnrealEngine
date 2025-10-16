@@ -38,7 +38,12 @@ protected:
 	APawn* Player;
 
 	UPROPERTY(EditAnywhere, Category = "Levels")
+	bool bTestLevels;
+
+	UPROPERTY(EditAnywhere, Category = "Levels")
 	TArray<TSubclassOf<ABaseLevel>> Levels;
+	UPROPERTY(EditAnywhere, Category = "Levels")
+	TArray<TSubclassOf<ABaseLevel>> TestLevels;
 
 	TArray<ABaseLevel*> LevelList;
 

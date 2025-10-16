@@ -21,6 +21,11 @@ void AWallSpikes::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!bCanMove)
+	{
+		return;
+	}
+
 	// Moving every tick
 	SetActorLocation(GetActorLocation() + FVector(0, 350 * DeltaTime, 0), true);
 }

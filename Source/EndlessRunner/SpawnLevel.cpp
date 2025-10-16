@@ -37,20 +37,25 @@ void ASpawnLevel::SpawnLevel(bool IsFirst)
 	SpawnLocation = FVector(0.0f, 1000.0f, 0.0f);
 	SpawnRotation = FRotator(0, 90, 0);
 
+	TArray<TSubclassOf<ABaseLevel>> _Levels = (bTestLevels) ? TestLevels : Levels;
+
 	if (!IsFirst) 
 	{
-		ABaseLevel* LastLevel = LevelList.Last();
-		SpawnLocation = LastLevel->GetSpawnLocation()->GetComponentTransform().GetTranslation();
+		if (LevelList.Num() > 0)
+		{
+			ABaseLevel* LastLevel = LevelList.Last();
+			SpawnLocation = LastLevel->GetSpawnLocation()->GetComponentTransform().GetTranslation();
+		}
 	}
 
-	RandomLevel = FMath::RandRange(0, Levels.Num());
+	RandomLevel = FMath::RandRange(0, _Levels.Num());
 	// Have a 75% chance of choosing another level if it is the same as the previous level (Avoids repetition)
 	if (RandomLevel == PreviousRandomLevel)
 	{
 		int rand = FMath::RandRange(0, 100);
 		if (rand < 75)
 		{
-			RandomLevel = FMath::RandRange(0, Levels.Num());
+			RandomLevel = FMath::RandRange(0, _Levels.Num());
 		}
 	}
 	PreviousRandomLevel = RandomLevel;
@@ -58,10 +63,10 @@ void ASpawnLevel::SpawnLevel(bool IsFirst)
 	ABaseLevel* NewLevel = nullptr;
 
 	// Randomly choose next level
-	for (int i = 0; i < Levels.Num(); i++)
+	for (int i = 0; i < _Levels.Num(); i++)
 	{
 		if (RandomLevel == i) {
-			NewLevel = GetWorld()->SpawnActor<ABaseLevel>(Levels[i], SpawnLocation, SpawnRotation, SpawnInfo);
+			NewLevel = GetWorld()->SpawnActor<ABaseLevel>(_Levels[i], SpawnLocation, SpawnRotation, SpawnInfo);
 		}
 	}
 

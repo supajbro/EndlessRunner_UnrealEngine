@@ -38,17 +38,24 @@ public:
 		AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex);
+
 protected:
 	bool bMoveToEndPosition;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Moving Platform")
 	float MoveSpeed = 100.f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Moving Platform")
 	UBoxComponent* MovingCube;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Moving Platform")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Moving Platform", meta = (MakeEditWidget = "true"))
 	UBoxComponent* StartPosition;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Moving Platform")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Moving Platform", meta = (MakeEditWidget = "true"))
 	UBoxComponent* EndPosition;
 
 public:

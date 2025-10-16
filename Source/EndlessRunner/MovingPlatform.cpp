@@ -38,6 +38,7 @@ void AMovingPlatform::BeginPlay()
 	Super::BeginPlay();
 	SetActorLocation(GetStartPosition()->GetComponentTransform().GetTranslation());
 	MovingCube->OnComponentBeginOverlap.AddDynamic(this, &AMovingPlatform::OnOverlapBegin);
+	MovingCube->OnComponentEndOverlap.AddDynamic(this, &AMovingPlatform::OnOverlapEnd);
 }
 
 // Called every frame
@@ -54,6 +55,12 @@ void AMovingPlatform::MoveToStartPosition(float DeltaTime)
 	{
 		return;
 	}
+
+	// Move to start position
+	FVector CurrentLocation = MovingCube->GetComponentLocation();
+	FVector StartPos = GetStartPosition()->GetComponentTransform().GetTranslation();
+	FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, StartPos, DeltaTime, MoveSpeed);
+	MovingCube->SetWorldLocation(NewLocation);
 }
 
 void AMovingPlatform::MoveToEndPosition(float DeltaTime)
@@ -83,6 +90,20 @@ void AMovingPlatform::OnOverlapBegin(UPrimitiveComponent* OverlappedComp,
 	if (Player)
 	{
 		bMoveToEndPosition = true;
+	}
+}
+
+void AMovingPlatform::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (!OtherActor)
+	{
+		return;
+	}
+
+	ARunnerCharacter* Player = Cast<ARunnerCharacter>(OtherActor);
+	if (Player)
+	{
+		bMoveToEndPosition = false;
 	}
 }
 
