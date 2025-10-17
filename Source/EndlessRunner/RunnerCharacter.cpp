@@ -8,6 +8,9 @@
 #include "Spikes.h"
 #include "WallSpikes.h"
 #include "Engine.h"
+#include "DistanceTrackerComponent.h"
+#include "DistanceWidget.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 ARunnerCharacter::ARunnerCharacter()
@@ -39,6 +42,8 @@ ARunnerCharacter::ARunnerCharacter()
 
 	tempPos = GetActorLocation();
 	zPos = tempPos.Z + 300.0f;
+
+	DistanceTracker = CreateDefaultSubobject<UDistanceTrackerComponent>(TEXT("DistanceTracker"));
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +54,15 @@ void ARunnerCharacter::BeginPlay()
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ARunnerCharacter::OnOverlapBegin);
 	
 	CanMove = true;
+
+	if (DistanceWidgetClass)
+	{
+		DistanceWidget = CreateWidget<UDistanceWidget>(GetWorld(), DistanceWidgetClass);
+		if (DistanceWidget)
+		{
+			DistanceWidget->AddToViewport();
+		}
+	}
 }
 
 // Called every frame
@@ -71,6 +85,11 @@ void ARunnerCharacter::Tick(float DeltaTime)
 	SideViewCamera->SetWorldLocation(tempPos);
 
 	FallingGravity(DeltaTime);
+
+	if (DistanceTracker && DistanceWidget)
+	{
+		DistanceWidget->UpdateDistanceDisplay(DistanceTracker->DistanceMeters);
+	}
 }
 
 // Called to bind functionality to input

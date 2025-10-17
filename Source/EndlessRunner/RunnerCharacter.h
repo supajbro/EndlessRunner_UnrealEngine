@@ -67,4 +67,15 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Jumping")
 	float KoyoteTime = .2f;
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UDistanceTrackerComponent* DistanceTracker;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class UDistanceWidget* DistanceWidget;
+
+	// Widget Blueprint class reference
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UDistanceWidget> DistanceWidgetClass;
 };
