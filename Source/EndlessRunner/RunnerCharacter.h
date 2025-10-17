@@ -48,6 +48,8 @@ public:
 
 	void RestartLevel();
 
+	void CameraControls(float DeltaTime);
+
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp,
 			AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -84,7 +86,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UDistanceWidget> DistanceWidgetClass;
 
-//protected:
-//	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
-//	USpringArmComponent* CameraBoom;
+public:
+
+	// Powerups
+	UPROPERTY(EditAnywhere, Category = "Powerup")
+	bool bDoubleJump;
+	bool bHasDoubleJumped;
 };

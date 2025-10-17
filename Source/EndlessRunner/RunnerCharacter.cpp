@@ -109,24 +109,10 @@ void ARunnerCharacter::Tick(float DeltaTime)
 		DistanceWidget->UpdateDistanceDisplay(DistanceTracker->DistanceMeters);
 	}
 
-	// Get the current camera boom location
-	FVector CurrentBoomLocation = CameraBoom->GetComponentLocation();
-
-	// Get the player's current location
-	FVector PlayerLocation = GetActorLocation();
-
-	// Calculate the new boom location
-	// The X and Y coordinates are kept fixed, while the Z matches the player
-	FVector NewBoomLocation;
-	NewBoomLocation.X = CurrentBoomLocation.X;
-	NewBoomLocation.Y = CurrentBoomLocation.Y;
-	NewBoomLocation.Z = PlayerLocation.Z + 500.f;
-
-	// Set the new location for the camera boom
-	CameraBoom->SetWorldLocation(NewBoomLocation);
+	CameraControls(DeltaTime);
 }
 
-// Called to bind functionality to input
+//// Called to bind functionality to input
 void ARunnerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -139,11 +125,27 @@ void ARunnerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void ARunnerCharacter::Jump()
 {
-	if (GetCharacterMovement()->IsMovingOnGround() || TimeSinceLeftGround <= KoyoteTime) 
+	UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+
+	// First jump or coyote jump
+	if (MoveComp->IsMovingOnGround() || TimeSinceLeftGround <= KoyoteTime)
 	{
 		Super::Jump();
+		bHasDoubleJumped = false;
+		UE_LOG(LogTemp, Warning, TEXT("Normal jump"));
+		return; // Prevent also triggering double jump logic this frame
+	}
+
+	// Double jump
+	if (bDoubleJump && !bHasDoubleJumped && MoveComp->IsFalling())
+	{
+		// Reset velocity to make the jump feel more powerful
+		LaunchCharacter(FVector(0, 0, MoveComp->JumpZVelocity), false, true);
+		bHasDoubleJumped = true;
+		UE_LOG(LogTemp, Warning, TEXT("Double jump started"));
 	}
 }
+
 
 void ARunnerCharacter::MoveRight(float value)
 {
@@ -173,6 +175,25 @@ void ARunnerCharacter::FallingGravity(float DeltaTime)
 void ARunnerCharacter::RestartLevel()
 {
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()));
+}
+
+void ARunnerCharacter::CameraControls(float DeltaTime)
+{
+	// Get the current camera boom location
+	FVector CurrentBoomLocation = CameraBoom->GetComponentLocation();
+
+	// Get the player's current location
+	FVector PlayerLocation = GetActorLocation();
+
+	// Calculate the new boom location
+	// The X and Y coordinates are kept fixed, while the Z matches the player
+	FVector NewBoomLocation;
+	NewBoomLocation.X = CurrentBoomLocation.X;
+	NewBoomLocation.Y = CurrentBoomLocation.Y;
+	NewBoomLocation.Z = PlayerLocation.Z + 500.f;
+
+	// Set the new location for the camera boom
+	CameraBoom->SetWorldLocation(NewBoomLocation);
 }
 
 void ARunnerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
