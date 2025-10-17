@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 #include "RunnerCharacter.generated.h"
 
 UCLASS()
@@ -13,6 +15,9 @@ class ENDLESSRUNNER_API ARunnerCharacter : public ACharacter
 
 	UPROPERTY(VisibleAnywhere)
 		class UCameraComponent* SideViewCamera;
+
+	UPROPERTY(VisibleAnywhere)
+		USpringArmComponent* CameraBoom;
 
 public:
 	// Sets default values for this character's properties
@@ -78,4 +83,8 @@ public:
 	// Widget Blueprint class reference
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UDistanceWidget> DistanceWidgetClass;
+
+//protected:
+//	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
+//	USpringArmComponent* CameraBoom;
 };

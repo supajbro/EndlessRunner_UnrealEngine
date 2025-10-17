@@ -27,9 +27,6 @@ ARunnerCharacter::ARunnerCharacter()
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 
-	SideViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Side View Camera"));
-	SideViewCamera->bUsePawnControlRotation = false;
-
 	// Set characters movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.f, 0.0f);
@@ -44,6 +41,27 @@ ARunnerCharacter::ARunnerCharacter()
 	zPos = tempPos.Z + 300.0f;
 
 	DistanceTracker = CreateDefaultSubobject<UDistanceTrackerComponent>(TEXT("DistanceTracker"));
+
+	// Create a camera boom
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->TargetArmLength = 300.0f; // The camera follows at this distance
+	CameraBoom->bUsePawnControlRotation = false; // Disable rotation with the pawn
+	CameraBoom->bInheritPitch = false;
+	CameraBoom->bInheritYaw = false;
+	CameraBoom->bInheritRoll = false;
+	CameraBoom->bDoCollisionTest = false; // Disable collision tests to prevent it from shortening
+	CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f)); // Set a fixed rotation
+
+	// Init camera
+	SideViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Side View Camera"));
+	SideViewCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	SideViewCamera->bUsePawnControlRotation = false;
+
+	if (SideViewCamera)
+	{
+		SideViewCamera->bUsePawnControlRotation = false;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -90,6 +108,22 @@ void ARunnerCharacter::Tick(float DeltaTime)
 	{
 		DistanceWidget->UpdateDistanceDisplay(DistanceTracker->DistanceMeters);
 	}
+
+	// Get the current camera boom location
+	FVector CurrentBoomLocation = CameraBoom->GetComponentLocation();
+
+	// Get the player's current location
+	FVector PlayerLocation = GetActorLocation();
+
+	// Calculate the new boom location
+	// The X and Y coordinates are kept fixed, while the Z matches the player
+	FVector NewBoomLocation;
+	NewBoomLocation.X = CurrentBoomLocation.X;
+	NewBoomLocation.Y = CurrentBoomLocation.Y;
+	NewBoomLocation.Z = PlayerLocation.Z + 500.f;
+
+	// Set the new location for the camera boom
+	CameraBoom->SetWorldLocation(NewBoomLocation);
 }
 
 // Called to bind functionality to input
