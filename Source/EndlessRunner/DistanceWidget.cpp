@@ -5,6 +5,11 @@ void UDistanceWidget::UpdateDistanceDisplay(float Distance)
 {
     if (DistanceText)
     {
-        DistanceText->SetText(FText::AsNumber(FMath::FloorToInt(Distance)));
+        FFormatOrderedArguments Args;
+        Args.Add(FText::AsNumber(FMath::FloorToInt(Distance)));
+
+        FText FormattedText = FText::Format(NSLOCTEXT("YourNamespace", "DistanceTextFormat", "{0} Meters"), Args);
+
+        DistanceText->SetText(FormattedText);
     }
 }
